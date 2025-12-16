@@ -1,6 +1,9 @@
 package com.project.journalApp.controllers;
 
 import com.project.journalApp.entity.JournalEntry;
+import com.project.journalApp.service.JournalEntryService;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -9,32 +12,39 @@ import java.util.*;
 @RequestMapping("journal")
 public class JournalEntryController {
 
-    Map<Long,JournalEntry> JE = new HashMap<>();
+    @Autowired
+    private JournalEntryService jes;
 
     @GetMapping
     public List<JournalEntry> getAll(){
-        return new ArrayList<>(JE.values());
+        return jes.getAll();
     }
 
     @PostMapping
     public boolean create(@RequestBody JournalEntry je){
-        JE.put(je.getId(),je);
+        jes.save(je);
         return true;
     }
 
     @GetMapping("/{id}")
-    public JournalEntry getById(@PathVariable long id){
-        return JE.get(id);
+    public JournalEntry getById(@PathVariable ObjectId id){
+        return jes.getById(id).orElse(null);
     }
 
     @PutMapping("/{id}")
-    public JournalEntry updateById(@PathVariable long id, @RequestBody JournalEntry je){
-        return JE.put(id,je);
+    public JournalEntry updateById(@PathVariable ObjectId id, @RequestBody JournalEntry je){
+        JournalEntry old = jes.getById(id).orElse(null);
+        if(old!=null){
+            old.setTitle(je.getTitle()!=null && !je.getTitle().isEmpty() ? je.getTitle() : old.getTitle());
+            old.setContent(je.getContent()!=null && !je.getContent().isEmpty() ? je.getContent() : old.getContent());
+        }
+        jes.save(old);
+        return null;
     }
 
     @DeleteMapping("/{id}")
-    public String deleteById(@PathVariable long id){
-        JE.remove(id);
+    public String deleteById(@PathVariable ObjectId id){
+        jes.delete(id);
         return "Success";
     }
 }
