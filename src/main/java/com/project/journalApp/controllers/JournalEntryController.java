@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -24,12 +25,18 @@ public class JournalEntryController {
         List<JournalEntry> all = jes.getAll();
         if(!all.isEmpty())return new ResponseEntity<>(all, HttpStatus.OK);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        //return !all.isEmpty() ? ResponseEntity.ok(all) : ResponseEntity.noContent().build(); ->this also works.
     }
 
     @PostMapping
     public ResponseEntity<?> create(@RequestBody JournalEntry je){
-        jes.save(je);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        try {
+            je.setDate(LocalDateTime.now());
+            jes.save(je);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/{id}")
@@ -53,7 +60,11 @@ public class JournalEntryController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteById(@PathVariable ObjectId id){
-        jes.delete(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        try {
+            jes.delete(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 }
