@@ -17,33 +17,36 @@ public class JournalEntryController {
     @Autowired
     private JournalEntryService journalEntryService;
 
-    @GetMapping
-    public ResponseEntity<?> getAll(){
-        List<JournalEntry> all = journalEntryService.getAll();
+    @GetMapping("{userName}")
+    public ResponseEntity<?> getAllUserJournals(@PathVariable String userName){
+        List<JournalEntry> all = journalEntryService.getAll(userName);
         if(!all.isEmpty())return new ResponseEntity<>(all, HttpStatus.OK);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         //return !all.isEmpty() ? ResponseEntity.ok(all) : ResponseEntity.noContent().build(); ->this also works.
     }
 
-    @PostMapping
-    public ResponseEntity<?> create(@RequestBody JournalEntry journalEntry){
+    @PostMapping("{userName}")
+    public ResponseEntity<?> createUserJournal(@RequestBody JournalEntry journalEntry,@PathVariable String userName){
         try {
-            journalEntryService.save(journalEntry);
+            journalEntryService.save(journalEntry,userName);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable ObjectId id){
+    @GetMapping("{userName}/{id}")
+    public ResponseEntity<?> getById(@PathVariable ObjectId id,@PathVariable String userName){
         Optional<JournalEntry> je = journalEntryService.getById(id);
         if(je.isPresent()) return new ResponseEntity<>(je,HttpStatus.OK);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateById(@PathVariable ObjectId id, @RequestBody JournalEntry journalEntry){
+    @PutMapping("{userName}/{id}")
+    public ResponseEntity<?> updateById(
+            @PathVariable ObjectId id,
+            @RequestBody JournalEntry journalEntry,
+            @PathVariable String userName){
         JournalEntry old = journalEntryService.getById(id).orElse(null);
         if(old!=null){
             old.setTitle(journalEntry.getTitle()!=null && !journalEntry.getTitle().isEmpty() ? journalEntry.getTitle() : old.getTitle());
@@ -54,10 +57,10 @@ public class JournalEntryController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteById(@PathVariable ObjectId id){
+    @DeleteMapping("{userName}/{id}")
+    public ResponseEntity<?> deleteById(@PathVariable ObjectId id,@PathVariable String userName){
         try {
-            journalEntryService.delete(id);
+            journalEntryService.delete(id,userName);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

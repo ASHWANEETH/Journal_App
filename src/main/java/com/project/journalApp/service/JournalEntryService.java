@@ -2,6 +2,7 @@ package com.project.journalApp.service;
 
 import com.project.journalApp.Repository.JournalEntryRepository;
 import com.project.journalApp.entity.JournalEntry;
+import com.project.journalApp.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,25 +19,44 @@ public class JournalEntryService {
     @Autowired
     private JournalEntryRepository journalEntryRepository;
 
-    public void save(JournalEntry journalEntry){
+    @Autowired
+    private UserService userService;
+
+    public void save(JournalEntry journalEntry, String userName){
         try {
+            User user = userService.getByUserName(userName);
             journalEntry.setDate(LocalDateTime.now());
-            journalEntryRepository.save(journalEntry);
+            JournalEntry saved = journalEntryRepository.save(journalEntry);
+            user.getJournalEntries().add(saved);
+            userService.save(user);
         } catch (Exception e) {
             log.error("Exception",e);
         }
     }
 
-    public List<JournalEntry> getAll(){
-        return journalEntryRepository.findAll();
+    public void save(JournalEntry journalEntry){
+        try {
+            journalEntry.setDate(LocalDateTime.now());
+            JournalEntry saved = journalEntryRepository.save(journalEntry);
+        } catch (Exception e) {
+            log.error("Exception",e);
+        }
+    }
+
+    public List<JournalEntry> getAll(String userName){
+        User user = userService.getByUserName(userName);
+        return user.getJournalEntries();
     }
 
     public Optional<JournalEntry> getById(ObjectId id){
         return journalEntryRepository.findById(id);
     }
 
-    public void delete(ObjectId id){
+    public void delete(ObjectId id, String userName){
+        User user = userService.getByUserName(userName);
         journalEntryRepository.deleteById(id);
+        user.getJournalEntries().removeIf(x -> x.getId().equals(id));
+        userService.save(user);
     }
 
 }
