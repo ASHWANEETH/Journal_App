@@ -2,11 +2,9 @@ package com.project.journalApp.controllers;
 
 import com.project.journalApp.entity.JournalEntry;
 import com.project.journalApp.service.JournalEntryService;
-import org.apache.coyote.Response;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +29,6 @@ public class JournalEntryController {
     @PostMapping
     public ResponseEntity<?> create(@RequestBody JournalEntry je){
         try {
-            je.setDate(LocalDateTime.now());
             jes.save(je);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {

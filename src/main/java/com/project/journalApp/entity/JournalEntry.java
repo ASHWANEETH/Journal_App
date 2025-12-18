@@ -6,8 +6,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
-@Document
-@Data //->@Getters,@Setters..........
+@Document(collection = "journalEntry")
+@Data   //->@Getters,@Setters..........
 public class JournalEntry {
 
     @Id
