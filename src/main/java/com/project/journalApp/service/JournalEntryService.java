@@ -16,27 +16,27 @@ import java.util.Optional;
 public class JournalEntryService {
 
     @Autowired
-    private JournalEntryRepository jer;
+    private JournalEntryRepository journalEntryRepository;
 
-    public void save(JournalEntry je){
+    public void save(JournalEntry journalEntry){
         try {
-            je.setDate(LocalDateTime.now());
-            jer.save(je);
+            journalEntry.setDate(LocalDateTime.now());
+            journalEntryRepository.save(journalEntry);
         } catch (Exception e) {
             log.error("Exception",e);
         }
     }
 
     public List<JournalEntry> getAll(){
-        return jer.findAll();
+        return journalEntryRepository.findAll();
     }
 
     public Optional<JournalEntry> getById(ObjectId id){
-        return jer.findById(id);
+        return journalEntryRepository.findById(id);
     }
 
     public void delete(ObjectId id){
-        jer.deleteById(id);
+        journalEntryRepository.deleteById(id);
     }
 
 }

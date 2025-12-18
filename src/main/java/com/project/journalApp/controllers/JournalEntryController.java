@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -16,20 +15,20 @@ import java.util.*;
 public class JournalEntryController {
 
     @Autowired
-    private JournalEntryService jes;
+    private JournalEntryService journalEntryService;
 
     @GetMapping
     public ResponseEntity<?> getAll(){
-        List<JournalEntry> all = jes.getAll();
+        List<JournalEntry> all = journalEntryService.getAll();
         if(!all.isEmpty())return new ResponseEntity<>(all, HttpStatus.OK);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         //return !all.isEmpty() ? ResponseEntity.ok(all) : ResponseEntity.noContent().build(); ->this also works.
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody JournalEntry je){
+    public ResponseEntity<?> create(@RequestBody JournalEntry journalEntry){
         try {
-            jes.save(je);
+            journalEntryService.save(journalEntry);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -38,18 +37,18 @@ public class JournalEntryController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable ObjectId id){
-        Optional<JournalEntry> je = jes.getById(id);
+        Optional<JournalEntry> je = journalEntryService.getById(id);
         if(je.isPresent()) return new ResponseEntity<>(je,HttpStatus.OK);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateById(@PathVariable ObjectId id, @RequestBody JournalEntry je){
-        JournalEntry old = jes.getById(id).orElse(null);
+    public ResponseEntity<?> updateById(@PathVariable ObjectId id, @RequestBody JournalEntry journalEntry){
+        JournalEntry old = journalEntryService.getById(id).orElse(null);
         if(old!=null){
-            old.setTitle(je.getTitle()!=null && !je.getTitle().isEmpty() ? je.getTitle() : old.getTitle());
-            old.setContent(je.getContent()!=null && !je.getContent().isEmpty() ? je.getContent() : old.getContent());
-            jes.save(old);
+            old.setTitle(journalEntry.getTitle()!=null && !journalEntry.getTitle().isEmpty() ? journalEntry.getTitle() : old.getTitle());
+            old.setContent(journalEntry.getContent()!=null && !journalEntry.getContent().isEmpty() ? journalEntry.getContent() : old.getContent());
+            journalEntryService.save(old);
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -58,7 +57,7 @@ public class JournalEntryController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteById(@PathVariable ObjectId id){
         try {
-            jes.delete(id);
+            journalEntryService.delete(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
