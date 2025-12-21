@@ -3,7 +3,6 @@ package com.project.journalApp.service;
 import com.project.journalApp.Repository.JournalEntryRepository;
 import com.project.journalApp.entity.JournalEntry;
 import com.project.journalApp.entity.User;
-import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-@Slf4j
 public class JournalEntryService {
 
     @Autowired
@@ -25,24 +23,16 @@ public class JournalEntryService {
 
     @Transactional
     public void save(JournalEntry journalEntry, String userName){
-        try {
-            User user = userService.getByUserName(userName);
-            journalEntry.setDate(LocalDateTime.now());
-            JournalEntry saved = journalEntryRepository.save(journalEntry);
-            user.getJournalEntries().add(saved);
-            userService.save(user);
-        } catch (Exception e) {
-            log.error("Exception",e);
-        }
+        User user = userService.getByUserName(userName);
+        journalEntry.setDate(LocalDateTime.now());
+        JournalEntry saved = journalEntryRepository.save(journalEntry);
+        user.getJournalEntries().add(saved);
+        userService.save(user);
     }
 
     public void save(JournalEntry journalEntry){
-        try {
-            journalEntry.setDate(LocalDateTime.now());
-            JournalEntry saved = journalEntryRepository.save(journalEntry);
-        } catch (Exception e) {
-            log.error("Exception",e);
-        }
+        journalEntry.setDate(LocalDateTime.now());
+        JournalEntry saved = journalEntryRepository.save(journalEntry);
     }
 
     public List<JournalEntry> getAll(String userName){
