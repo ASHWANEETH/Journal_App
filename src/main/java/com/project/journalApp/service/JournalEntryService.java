@@ -27,12 +27,12 @@ public class JournalEntryService {
         journalEntry.setDate(LocalDateTime.now());
         JournalEntry saved = journalEntryRepository.save(journalEntry);
         user.getJournalEntries().add(saved);
-        userService.update(user);
+        userService.saveUser(user);
     }
 
     public void save(JournalEntry journalEntry){
         journalEntry.setDate(LocalDateTime.now());
-        JournalEntry saved = journalEntryRepository.save(journalEntry);
+        journalEntryRepository.save(journalEntry);
     }
 
     public List<JournalEntry> getAll(String userName){
@@ -40,15 +40,24 @@ public class JournalEntryService {
         return user.getJournalEntries();
     }
 
-    public Optional<JournalEntry> getById(ObjectId id){
-        return journalEntryRepository.findById(id);
+    public Optional<JournalEntry> getById(String userName,ObjectId id){
+        User user = userService.getByUserName(userName);
+        List<JournalEntry> je = user.getJournalEntries().stream().filter(x->x.getId().equals(id)).toList();
+        if(!je.isEmpty()) return journalEntryRepository.findById(id);
+        else return Optional.empty();
     }
 
-    public void delete(ObjectId id, String userName){
+    @Transactional
+    public boolean delete(ObjectId id, String userName){
+        boolean removed = false;
         User user = userService.getByUserName(userName);
-        journalEntryRepository.deleteById(id);
-        user.getJournalEntries().removeIf(x -> x.getId().equals(id));
-        userService.update(user);
+        Optional<JournalEntry> je = user.getJournalEntries().stream().filter(x->x.getId().equals(id)).findFirst();
+        if(je.isPresent()){
+            journalEntryRepository.deleteById(id);
+            removed = user.getJournalEntries().remove(je.get());
+            userService.saveUser(user);
+        }
+        return removed;
     }
 
 }

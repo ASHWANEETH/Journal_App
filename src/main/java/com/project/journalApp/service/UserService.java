@@ -2,13 +2,11 @@ package com.project.journalApp.service;
 
 import com.project.journalApp.Repository.UserRepository;
 import com.project.journalApp.entity.User;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -19,13 +17,13 @@ public class UserService {
 
     private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public void saveNew(User userEntry){
+    public void saveNewUser(User userEntry){
         userEntry.setPassword(passwordEncoder.encode(userEntry.getPassword()));
-        userEntry.setUserRoles(Arrays.asList("USER"));
+        userEntry.setUserRoles(List.of("USER"));
         userRepository.save(userEntry);
     }
 
-    public void update(User userEntry){
+    public void saveUser(User userEntry){
         userRepository.save(userEntry);
     }
 

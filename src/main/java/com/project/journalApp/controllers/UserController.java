@@ -4,11 +4,8 @@ import com.project.journalApp.entity.User;
 import com.project.journalApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("user")
@@ -24,7 +21,7 @@ public class UserController {
         User userDB = userService.getByUserName(userName);
         userDB.setUserName(user.getUserName());
         userDB.setPassword(user.getPassword());
-        userService.saveNew(userDB);
+        userService.saveNewUser(userDB);
     }
 
     @DeleteMapping
