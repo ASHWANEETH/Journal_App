@@ -27,7 +27,7 @@ public class JournalEntryService {
         journalEntry.setDate(LocalDateTime.now());
         JournalEntry saved = journalEntryRepository.save(journalEntry);
         user.getJournalEntries().add(saved);
-        userService.save(user);
+        userService.update(user);
     }
 
     public void save(JournalEntry journalEntry){
@@ -48,7 +48,7 @@ public class JournalEntryService {
         User user = userService.getByUserName(userName);
         journalEntryRepository.deleteById(id);
         user.getJournalEntries().removeIf(x -> x.getId().equals(id));
-        userService.save(user);
+        userService.update(user);
     }
 
 }
