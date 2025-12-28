@@ -1,5 +1,6 @@
 package com.project.journalApp.entity;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
 import org.bson.types.ObjectId;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "users")
+@Builder
 @Data
 public class User {
 
